@@ -105,7 +105,9 @@ For example, </br>
 `az resource invoke-action --resource-group wls1411-rg --resource-type  Microsoft.VirtualMachineImages/imageTemplates -n wls14.1.1.0.0-jdk1.8.0_291-ol7.6 --action Run`
 
 Image builder action run will take few minutes to complete. Azure image builder creates resource group with prefix *IT-your_resource_group_name*.
+
 At the end of execution, action run will provide VHD location URL, which is available within *IT-your_resource_group_name*.
+
 VHD file needs to be moved or copied to safe storage locaton.
 
 
