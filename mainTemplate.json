@@ -1,0 +1,187 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"userAssignedIdentity": {
+			"type": "string",
+			"metadata": {
+				"description": "User-assigned identity for resource group"
+			}
+		},	
+		"_artifactsLocation": {
+			"type": "string",
+			"metadata": {
+				"description": "The base URI where artifacts required by this template are located. When the template is deployed using the accompanying scripts, a private location in the subscription will be used and this value will be automatically generated."
+			}
+		},
+		"_artifactsLocationTemplate": {
+			"defaultValue": "[if(contains(parameters('_artifactsLocation'), 'githubusercontent'), parameters('_artifactsLocation'), deployment().properties.templateLink.uri)]",
+			"type": "string",
+			"metadata": {
+				"description": "If we are deploying from the command line, use the passed in _artifactsLocation, otherwise use the default."
+			}
+		},
+		"_artifactsLocationSasToken": {
+			"defaultValue": "",
+			"type": "securestring",
+			"metadata": {
+				"description": "The sasToken required to access _artifactsLocation.  When the template is deployed using the accompanying scripts, a sasToken will be automatically generated. Use the defaultValue if the staging location is not secured."
+			}
+		},
+		"wlsShiphomeURL": {
+			"type": "string",
+			"metadata": {
+				"description": "Provide Oracle WebLoic shiphome SAS URI"
+			}
+		},
+		"jdkURL": {
+			"type": "string",
+			"metadata": {
+				"description": "Provide JDK SAS URI"
+			}
+		},
+		"wlsVersion": {
+			"type": "string",
+			"metadata": {
+				"description": "Provide WebLogic version"
+			}
+		},
+		"jdkVersion": {
+			"type": "string",
+			"metadata": {
+				"description": "Provide JDK version"
+			}
+		},
+		"linuxOSVersion": {
+			"type": "string",
+			"defaultValue": "7.6",
+			"allowedValues": [
+				"7.6",
+				"7.4",
+				"7.3"
+			],
+			"metadata": {
+				"description": "The Oracle Linux version for the VM. This will pick a fully patched image of this given Oracle Linux version."
+			}
+		},
+		"location": {
+			"type": "string",
+			"defaultValue": "[resourceGroup().location]",
+			"metadata": {
+				"description": "Location for all resources."
+			}
+		},
+		"wlsPatchURL": {
+			"type": "string",
+			"defaultValue": "none",
+			"metadata": {
+				"description": "WLS patch SAS URI"
+			}
+		},
+		"opatchURL": {
+			"type": "string",
+			"defaultValue": "none",
+			"metadata": {
+				"description": "Opatch patch SAS URI"
+			}
+		}
+	},
+	"variables": {
+		"name_imageTemplate": "[concat('wls',parameters('wlsVersion'),'-',parameters('jdkVersion'),'-ol',parameters('linuxOSVersion'))]",
+		"name_imagebuilderTemplate": "[concat('wls',parameters('wlsVersion'),'-',parameters('jdkVersion'),'-ol',parameters('linuxOSVersion'))]",
+		"name_setupWLSCommand": "[concat('sh setupWLS.sh',' <<< \"',parameters('wlsShiphomeURL'),' ',parameters('jdkURL'),' ',parameters('wlsVersion'),' ',parameters('jdkVersion'),'\"')]",
+		"name_opatchUpdateCommand": "[concat('sh opatchUpdate.sh',' <<< \"',parameters('opatchURL'),'\"')]",
+		"name_wlspatchUpdateCommand": "[concat('sh wlsPatchUpdate.sh',' <<< \"',parameters('wlsPatchURL'),'\"')]",
+		"download_wlsScript": "[concat('curl  -# -O ',parameters('_artifactsLocationTemplate'), 'setupWLS.sh')]",
+		"download_opatchScript": "[concat('curl  -# -O ',parameters('_artifactsLocationTemplate'), 'opatchUpdate.sh')]",
+		"download_wlsPatchScript": "[concat('curl  -# -O ',parameters('_artifactsLocationTemplate'), 'wlsPatchUpdate.sh')]"
+	},
+	"resources": [
+		{
+			"name": "[variables('name_imageTemplate')]",
+			"type": "Microsoft.VirtualMachineImages/imageTemplates",
+			"apiVersion": "2020-02-14",
+			"location": "[parameters('location')]",
+			"dependsOn": [
+			],
+			"tags": {
+				"imagebuilderTemplate": "[variables('name_imagebuilderTemplate')]"
+			},
+			"identity": {
+				"type": "UserAssigned",
+				"userAssignedIdentities": {
+					"[parameters('userAssignedIdentity')]": {
+					}
+				}
+			},
+			"properties": {
+				"buildTimeoutInMinutes": 60,
+				"source": {
+					"type": "PlatformImage",
+					"publisher": "Oracle",
+					"offer": "Oracle-Linux",
+					"sku": "[parameters('linuxOSVersion')]",
+					"version": "latest"
+				},
+				"customize": [
+					{
+						"type": "Shell",
+						"name": "setupWLS",
+						"inline": [
+							"mkdir -p /u01/scripts",
+							"cd /u01/scripts",
+							"curl -# -O https://raw.githubusercontent.com/sanjaymantoor/wls-image-builder/master/setupWLS.sh",
+							"[variables('name_setupWLSCommand')]",
+							"rm -rf /u01/scripts"
+						]
+					},
+					{
+						"type": "Shell",
+						"name": "updateOpatch",
+						"inline": [
+							"mkdir -p /u01/scripts",
+							"cd /u01/scripts",
+							"curl -# -O https://raw.githubusercontent.com/sanjaymantoor/wls-image-builder/master/opatchUpdate.sh",
+							"[variables('name_opatchUpdateCommand')]",
+							"rm -rf /u01/scripts"
+						]
+					},
+					{
+						"type": "Shell",
+						"name": "updateWLSPatch",
+						"inline": [
+							"mkdir -p /u01/scripts",
+							"cd /u01/scripts",
+							"curl -# -O https://raw.githubusercontent.com/sanjaymantoor/wls-image-builder/master/wlsPatchUpdate.sh",
+							"[variables('name_wlspatchUpdateCommand')]",
+							"rm -rf /u01/scripts"
+						]
+					},
+					{
+						"type": "Shell",
+						"name": "Reboot",
+						"inline": [
+							"echo ============== REBOOTING ==============",
+							"#sudo reboot",
+							"#sleep 10m",
+							"echo ======================================="
+						]
+					},
+					{
+						"type": "Shell",
+						"name": "AfterBoot",
+						"inline": [
+							"echo REBOOTED"
+						]
+					}
+				],
+				"distribute": [
+					{
+						"type": "VHD",
+						"runOutputName": "[variables('name_imageTemplate')]"
+					}
+				]
+			}
+		}
+	]
+}
