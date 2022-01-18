@@ -50,7 +50,9 @@ imageRoleDefName="Azure Image Builder Image Def"$(date +'%s')
 * update the definition
 
 sed -i -e "s/<subscriptionID>/$subscriptionID/g" aibRoleImageCreation.json
+  
 sed -i -e "s/<rgName>/$resourceGroup/g" aibRoleImageCreation.json
+  
 sed -i -e "s/Azure Image Builder Service Image Creation Role/$imageRoleDefName/g" aibRoleImageCreation.json
 
 * create role definitions
