@@ -70,7 +70,7 @@ sed -i -e "s/Azure Image Builder Service Image Creation Role/$imageRoleDefName/g
 | Parameter | Details |
 |---|---|
 |userAssignedIdentity| Provide </br> imgBuilderId=/subscriptions/$subscriptionID/resourcegroups/$resourceGroup/providers/Microsoft.ManagedIdentity/userAssignedIdentities/$identityName|
-| _artifactsLocation | Repoistory URL </br> For example, https://raw.githubusercontent.com/sanjaymantoor/wls-image-builder/master|
+| \_artifactsLocation | Repoistory URL </br> For example, https://raw.githubusercontent.com/sanjaymantoor/wls-image-builder/master|
 |wlsShiphomeURL| WebLogic shiphome URL stored in your Azure subscription storage account container ( SAS URI ). Make sure URL is accessible. </br> For example, https://mystorageaccount.blob.core.windows.net/shiphomes/fmw_14.1.1.0.0_wls_Disk1_1of1.zip|
 |jdkURL | JDK8 or JDK11 shiphome URL stored in your Azure subscription storage account container ( SAS URI ). Make sure URL is accessible. </br> For example,https://mystorageaccount.blob.core.windows.net/shiphomes/jdk-8u291-linux-x64.tar.gz|
 |wlsVersion| Provide WebLogic version. For example, 14.1.1.0.0 or 12.2.1.4.0 or 12.2.1.3.0|
@@ -78,5 +78,35 @@ sed -i -e "s/Azure Image Builder Service Image Creation Role/$imageRoleDefName/g
 |linuxOSVersion| Provide Oracle Linux version. For example, 7.6 in case it is Oracle Linux 7.6. </br> Supported versions 7.3, 7.4 and 7.6|
 |wlsPatchURL|Provide WebLogic patch stored in your Azure subscription storage account container ( SAS URI ).  Make sure URL is accessible. </br> |
 |opatchURL|Provide OPatch stored in your Azure subscription storage account container ( SAS URI ).  Make sure URL is accessible. </br> |
+
+### Usage with Azure CLI
+**Creating image builder template**
+
+az group deployment create --resource-group *your_resource_group_name* --template-uri *https://raw.githubusercontent.com/sanjaymantoor/wls-image-builder/master/mainTemplate.json* --parameters *parameters.json*
+
+Image template created based on "wls"${wlsVersion}-${jdkVersion}-ol${linuxOSVersion} format.
+
+For example, </br>
+
+wlsVersion=14.1.1.0.0
+jdkVersion=jdk1.8.0_291
+linuxOSVersion=7.6
+
+`az group deployment create --resource-group  wls1411-rg --template-uri https://raw.githubusercontent.com/sanjaymantoor/wls-image-builder/master/mainTemplate.json --parameters parameters.json`
+
+Image template name created is *wls14.1.1.0.0-jdk1.8.0_291-ol7.6* under resource group *wls1411-rg"*
+
+**Starting the image build**
+
+az resource invoke-action --resource-group *your_resource_group_name* --resource-type  Microsoft.VirtualMachineImages/imageTemplates -n *template_name_created*  --action Run
+
+For example, </br>
+
+`az resource invoke-action --resource-group wls1411-rg --resource-type  Microsoft.VirtualMachineImages/imageTemplates -n wls14.1.1.0.0-jdk1.8.0_291-ol7.6 --action Run`
+
+Image builder action run will take few minutes to complete. Azure image builder creates resource group with prefix *IT-your_resource_group_name*.
+At the end of execution, action run will provide VHD location URL, which is available within *IT-your_resource_group_name*.
+VHD file needs to be moved or copied to safe storage locaton.
+
 
 
