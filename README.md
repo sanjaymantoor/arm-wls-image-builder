@@ -19,14 +19,15 @@ Please refer to the README for [documentation on WebLogic Server running on an A
 
 Refer [Azure Image Builder overview](https://docs.microsoft.com/en-us/azure/virtual-machines/image-builder-overview) for more details.
 Before using the WLS image builder scripts, register the features as mentioned.
-### Register the features
+
+## Register the features
 * az provider register -n Microsoft.VirtualMachineImages
 * az provider register -n Microsoft.Compute
 * az provider register -n Microsoft.KeyVault
 * az provider register -n Microsoft.Storage
 * az provider register -n Microsoft.Network
 
-### Create a user-assigned identity and set permissions on the resource group
+## Create a user-assigned identity and set permissions on the resource group
  * create user assigned identity for image builder to access the storage account where the script is located
   
      identityName=wlsimageidentity
@@ -66,7 +67,7 @@ sed -i -e "s/Azure Image Builder Service Image Creation Role/$imageRoleDefName/g
     --role "$imageRoleDefName" \
     --scope /subscriptions/$subscriptionID/resourceGroups/$resourceGroup
 
-### Details on parameters
+## Details on parameters
 | Parameter | Details |
 |---|---|
 |userAssignedIdentity| Provide </br> imgBuilderId=/subscriptions/$subscriptionID/resourcegroups/$resourceGroup/providers/Microsoft.ManagedIdentity/userAssignedIdentities/$identityName|
@@ -79,7 +80,7 @@ sed -i -e "s/Azure Image Builder Service Image Creation Role/$imageRoleDefName/g
 |wlsPatchURL|Provide WebLogic patch stored in your Azure subscription storage account container ( SAS URI ).  Make sure URL is accessible. </br> |
 |opatchURL|Provide OPatch stored in your Azure subscription storage account container ( SAS URI ).  Make sure URL is accessible. </br> |
 
-### Usage with Azure CLI
+## Usage with Azure CLI
 **Creating image builder template**
 
 az group deployment create --resource-group *your_resource_group_name* --template-uri *https://raw.githubusercontent.com/sanjaymantoor/wls-image-builder/master/mainTemplate.json* --parameters *parameters.json*
@@ -110,5 +111,33 @@ At the end of execution, action run will provide VHD location URL, which is avai
 
 VHD file needs to be moved or copied to safe storage locaton for further usage like for creating market place offer.
 
+## Validate successful deployment 
 
+### Upon successful completion of Creating the image builder template
 
+    `"provisioningState": "Succeeded",
+    "templateHash": "10808740392366687826",
+    "templateLink": {
+      "contentVersion": "1.0.0.0",
+      "id": null,
+      "queryString": null,
+      "relativePath": null,
+      "uri": "https://raw.githubusercontent.com/sanjaymantoor/arm-wls-image-builder/master/mainTemplate.json"
+    },`
+
+**At azure portal**
+
+![image](https://user-images.githubusercontent.com/36834780/149988999-c83f1ff6-4ac7-434c-ac12-727f95d5f3a4.png)
+
+### Upon successful completion of image builder action run
+
+`{
+  "endTime": "2022-01-18T17:22:13.5424586Z",
+  "name": "7EF5EA1B-8927-4B2A-8045-6F8CF0158D60",
+  "startTime": "2022-01-18T17:00:54.7Z",
+  "status": "Succeeded"
+}`
+
+**At azure portal**
+
+![image](https://user-images.githubusercontent.com/36834780/149989766-ad92f708-fc87-49dc-8beb-c6c6aea333c5.png)
