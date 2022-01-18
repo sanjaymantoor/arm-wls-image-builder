@@ -70,4 +70,13 @@ sed -i -e "s/Azure Image Builder Service Image Creation Role/$imageRoleDefName/g
 | Parameter | Details |
 |---|---|
 |userAssignedIdentity| Provide </br> imgBuilderId=/subscriptions/$subscriptionID/resourcegroups/$resourceGroup/providers/Microsoft.ManagedIdentity/userAssignedIdentities/$identityName|
-| _artifactsLocation||
+| _artifactsLocation | Repoistory URL </br> For example, https://raw.githubusercontent.com/sanjaymantoor/wls-image-builder/master|
+|wlsShiphomeURL| WebLogic shiphome URL stored in your Azure subscription storage account container ( SAS URI ). Make sure URL is accessible. </br> For example, https://mystorageaccount.blob.core.windows.net/shiphomes/fmw_14.1.1.0.0_wls_Disk1_1of1.zip|
+|jdkURL | JDK8 or JDK11 shiphome URL stored in your Azure subscription storage account container ( SAS URI ). Make sure URL is accessible. </br> For example,https://mystorageaccount.blob.core.windows.net/shiphomes/jdk-8u291-linux-x64.tar.gz|
+|wlsVersion| Provide WebLogic version. For example, 14.1.1.0.0 or 12.2.1.4.0 or 12.2.1.3.0|
+|jdkVersion| Provide JDK version. For example, jdk1.8.0_291|
+|linuxOSVersion| Provide Oracle Linux version. For example, 7.6 in case it is Oracle Linux 7.6. </br> Supported versions 7.3, 7.4 and 7.6|
+|wlsPatchURL|Provide WebLogic patch stored in your Azure subscription storage account container ( SAS URI ).  Make sure URL is accessible. </br> |
+|opatchURL|Provide OPatch stored in your Azure subscription storage account container ( SAS URI ).  Make sure URL is accessible. </br> |
+
+
