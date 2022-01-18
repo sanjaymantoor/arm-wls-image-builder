@@ -28,30 +28,38 @@ Before using the WLS image builder scripts, register the features as mentioned.
 
 ### Create a user-assigned identity and set permissions on the resource group
  * create user assigned identity for image builder to access the storage account where the script is located
-  identityName=wlsimageidentity
-  az identity create -g $sigResourceGroup -n $identityName
+  
+     identityName=wlsimageidentity
+  
+     az identity create -g $resourceGroup-n $identityName
 
 * get identity id
-imgBuilderCliId=$(az identity show -g $sigResourceGroup -n $identityName --query clientId -o tsv)
+
+imgBuilderCliId=$(az identity show -g $resourceGroup -n $identityName --query clientId -o tsv)
 
 * get the user identity URI, needed for the template
-imgBuilderId=/subscriptions/$subscriptionID/resourcegroups/$sigResourceGroup/providers/Microsoft.ManagedIdentity/userAssignedIdentities/$identityName
 
-* this command will download an Azure role definition template, and update the template with the parameters specified earlier.
+imgBuilderId=/subscriptions/$subscriptionID/resourcegroups/$resourceGroup/providers/Microsoft.ManagedIdentity/userAssignedIdentities/$identityName
+
+* Download an Azure role definition template, and update the template with the parameters specified earlier.
+
 curl https://raw.githubusercontent.com/Azure/azvmimagebuilder/master/solutions/12_Creating_AIB_Security_Roles/aibRoleImageCreation.json -o aibRoleImageCreation.json
 
 imageRoleDefName="Azure Image Builder Image Def"$(date +'%s')
 
 * update the definition
+
 sed -i -e "s/<subscriptionID>/$subscriptionID/g" aibRoleImageCreation.json
-sed -i -e "s/<rgName>/$sigResourceGroup/g" aibRoleImageCreation.json
+sed -i -e "s/<rgName>/$resourceGroup/g" aibRoleImageCreation.json
 sed -i -e "s/Azure Image Builder Service Image Creation Role/$imageRoleDefName/g" aibRoleImageCreation.json
 
-# create role definitions
-az role definition create --role-definition ./aibRoleImageCreation.json
+* create role definitions
 
-# grant role definition to the user assigned identity
-az role assignment create \
+ az role definition create --role-definition ./aibRoleImageCreation.json
+
+* grant role definition to the user assigned identity
+
+  az role assignment create \
     --assignee $imgBuilderCliId \
     --role "$imageRoleDefName" \
-    --scope /subscriptions/$subscriptionID/resourceGroups/$sigResourceGroup
+    --scope /subscriptions/$subscriptionID/resourceGroups/$resourceGroup
