@@ -94,7 +94,7 @@ linuxOSVersion=7.6
 
 `az group deployment create --resource-group  wls1411-rg --template-uri https://raw.githubusercontent.com/sanjaymantoor/wls-image-builder/master/mainTemplate.json --parameters parameters.json`
 
-Image template name created is *wls14.1.1.0.0-jdk1.8.0_291-ol7.6* under resource group *wls1411-rg"*
+Image template name created is *wls14.1.1.0.0-jdk1.8.0_291-ol7.6* under resource group *wls1411-rg*
 
 **Starting the image build**
 
