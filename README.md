@@ -65,3 +65,9 @@ sed -i -e "s/Azure Image Builder Service Image Creation Role/$imageRoleDefName/g
     --assignee $imgBuilderCliId \
     --role "$imageRoleDefName" \
     --scope /subscriptions/$subscriptionID/resourceGroups/$resourceGroup
+
+### Details on parameters
+| Parameter | Details |
+|---|---|
+|userAssignedIdentity| Provide </br> imgBuilderId=/subscriptions/$subscriptionID/resourcegroups/$resourceGroup/providers/Microsoft.ManagedIdentity/userAssignedIdentities/$identityName|
+| _artifactsLocation||
