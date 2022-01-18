@@ -106,9 +106,9 @@ For example, </br>
 
 Image builder action run will take few minutes to complete. Azure image builder creates resource group with prefix *IT-your_resource_group_name*.
 
-At the end of execution, action run will provide VHD location URL, which is available within *IT-your_resource_group_name*.
+At the end of execution, action run will provide VHD location URL, which is available under image builder created resource group with prefix *IT-your_resource_group_name* storage account under container *vhds* .
 
-VHD file needs to be moved or copied to safe storage locaton.
+VHD file needs to be moved or copied to safe storage locaton for further usage like for creating market place offer.
 
 
 
