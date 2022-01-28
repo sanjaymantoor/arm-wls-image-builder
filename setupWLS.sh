@@ -326,6 +326,10 @@ export POSTGRESQL_JDBC_DRIVER=${POSTGRESQL_JDBC_DRIVER_URL##*/}
 export MSSQL_JDBC_DRIVER_URL=https://repo.maven.apache.org/maven2/com/microsoft/sqlserver/mssql-jdbc/7.4.1.jre8/mssql-jdbc-7.4.1.jre8.jar
 export MSSQL_JDBC_DRIVER=${MSSQL_JDBC_DRIVER_URL##*/}
 
+# This has to be done first as wget is not available with Oracle Linux 7.3
+echo "Installing zip unzip wget vnc-server rng-tools cifs-utils"
+sudo yum install -y zip unzip wget vnc-server rng-tools cifs-utils
+
 echo "================================================================="
 echo "##########           Starting WebLogic setup           ##########" 
 echo "================================================================="
@@ -389,9 +393,6 @@ else
     echo_stderr "Failed to set JAVA_HOME. Please check logs and re-run the setup"
     exit 1
 fi
-
-echo "Installing zip unzip wget vnc-server rng-tools cifs-utils"
-sudo yum install -y zip unzip wget vnc-server rng-tools cifs-utils
 
 #Setting up rngd utils
 sudo systemctl enable rngd 
