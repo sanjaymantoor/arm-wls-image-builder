@@ -130,7 +130,7 @@
 						"inline": [
 							"mkdir -p /u01/scripts",
 							"cd /u01/scripts",
-							"curl -# -O https://raw.githubusercontent.com/sanjaymantoor/wls-image-builder/master/setupWLS.sh",
+							"curl -# -O https://raw.githubusercontent.com/sanjaymantoor/arm-wls-image-builder/master/setupWLS.sh",
 							"[variables('name_setupWLSCommand')]",
 							"rm -rf /u01/scripts"
 						]
@@ -141,7 +141,7 @@
 						"inline": [
 							"mkdir -p /u01/scripts",
 							"cd /u01/scripts",
-							"curl -# -O https://raw.githubusercontent.com/sanjaymantoor/wls-image-builder/master/opatchUpdate.sh",
+							"curl -# -O https://raw.githubusercontent.com/sanjaymantoor/arm-wls-image-builder/master/opatchUpdate.sh",
 							"[variables('name_opatchUpdateCommand')]",
 							"rm -rf /u01/scripts"
 						]
@@ -152,7 +152,7 @@
 						"inline": [
 							"mkdir -p /u01/scripts",
 							"cd /u01/scripts",
-							"curl -# -O https://raw.githubusercontent.com/sanjaymantoor/wls-image-builder/master/wlsPatchUpdate.sh",
+							"curl -# -O https://raw.githubusercontent.com/sanjaymantoor/arm-wls-image-builder/master/wlsPatchUpdate.sh",
 							"[variables('name_wlspatchUpdateCommand')]",
 							"rm -rf /u01/scripts"
 						]
